@@ -194,6 +194,48 @@
   .tips ol { padding-left: 20px; }
   .tips li { margin-bottom: 6px; }
 
+  .last-resort {
+    background: var(--card);
+    border: 2px solid var(--warn);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 14px;
+    font-size: 14px;
+  }
+  .last-resort h3 { font-size: 16px; margin-bottom: 8px; color: #c47a14; }
+  .last-resort h4 {
+    font-size: 14px;
+    margin: 18px 0 6px;
+    padding-left: 10px;
+    border-left: 4px solid var(--warn);
+  }
+  .last-resort ol { padding-left: 20px; }
+  .last-resort li { margin-bottom: 6px; }
+  .last-resort .flow {
+    background: #fdf3e3;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    margin: 10px 0;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: .02em;
+  }
+  .last-resort .note {
+    background: var(--zoom-blue-light);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  .last-resort .warn {
+    background: #fdeaea;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+
   footer {
     margin-top: 40px;
     font-size: 12px;
@@ -367,6 +409,56 @@
       <li><span class="ui">高忠実度音楽モード</span> と <span class="ui">ステレオオーディオ</span> にチェック</li>
     </ol>
     <p>※高音質モードは通信量が増えるので、回線が不安定な場合はオフのままを推奨します。</p>
+  </div>
+
+  <div class="section-title"><span class="num">最終手段</span>STEP 7まで全部ダメだったとき</div>
+  <p class="section-lead">会社管理のPCで設定が制限されている、原因不明だが今日のミーティングは乗り切りたい——そんなときは、Zoomのサウンド共有機能を使わずに音を届けます。</p>
+
+  <div class="last-resort">
+    <h3>🔧 VB-CABLEで強引に解決する（サウンド共有を完全バイパス）</h3>
+    <p>無料の仮想オーディオドライバ「VB-CABLE」を使い、PCの音を<strong>マイク入力としてZoomに流し込む</strong>方法です。Zoomからは「マイクでしゃべっている」ようにしか見えないため、サウンド共有まわりの不具合が何であっても確実に音が届きます。</p>
+    <div class="flow">PCの音 → CABLE Input（仮想スピーカー）→ CABLE Output（仮想マイク）→ Zoom</div>
+
+    <h4>手順1：VB-CABLEをインストール（初回のみ）</h4>
+    <ol>
+      <li><a href="https://vb-audio.com/Cable/" target="_blank" rel="noopener">vb-audio.com/Cable</a> から「VB-CABLE Driver」をダウンロードしてZIPを展開</li>
+      <li><span class="ui">VBCABLE_Setup_x64.exe</span> を右クリック → <span class="ui">管理者として実行</span> → <span class="ui">Install Driver</span></li>
+      <li>PCを<strong>再起動</strong>（再起動しないとデバイスが正しく認識されません）</li>
+    </ol>
+
+    <h4>手順2：PCの音の出力先をCABLEに切り替える</h4>
+    <ol>
+      <li>タスクバー右下のスピーカーアイコンをクリック</li>
+      <li>出力デバイスを <span class="ui">CABLE Input (VB-Audio Virtual Cable)</span> に変更</li>
+    </ol>
+    <div class="note">この時点で自分のPCから音が聞こえなくなりますが正常です（音はケーブルの中に流れています）。自分でも聞きたい場合は手順4へ。</div>
+
+    <h4>手順3：ZoomのマイクをCABLEにする</h4>
+    <ol>
+      <li>Zoomの <span class="ui">設定</span> → <span class="ui">オーディオ</span> を開く</li>
+      <li>マイクを <span class="ui">CABLE Output (VB-Audio Virtual Cable)</span> に変更</li>
+      <li><span class="ui">マイク音量を自動調整します</span> のチェックを<strong>外す</strong></li>
+      <li><span class="ui">背景雑音を抑制</span> を <span class="ui">低</span> にする（music・BGMがノイズ扱いで消されるのを防ぐ）</li>
+      <li>可能なら <span class="ui">オリジナルサウンド</span> をオンにして音質劣化を防ぐ</li>
+    </ol>
+
+    <h4>手順4：自分でも音を聞けるようにする（任意）</h4>
+    <ol>
+      <li>スピーカーアイコンを右クリック → <span class="ui">サウンドの設定</span> → <span class="ui">サウンドの詳細設定</span>（サウンドコントロールパネル）</li>
+      <li><span class="ui">録音</span> タブ → <span class="ui">CABLE Output</span> をダブルクリック</li>
+      <li><span class="ui">聴く</span> タブ → <span class="ui">このデバイスを聴く</span> にチェック → 再生先に普段のスピーカー/イヤホンを選択 → OK</li>
+    </ol>
+
+    <h4>手順5：自分の声も一緒に届けたいとき（任意）</h4>
+    <p>手順3でマイクをCABLEにしたため、そのままだと自分の声が相手に届きません。しゃべりながら音も流したい場合：</p>
+    <ol>
+      <li>サウンドコントロールパネルの <span class="ui">録音</span> タブ → 実際のマイクをダブルクリック</li>
+      <li><span class="ui">聴く</span> タブ → <span class="ui">このデバイスを聴く</span> にチェック → 再生先を <span class="ui">CABLE Input</span> にする → OK</li>
+    </ol>
+    <p>これで「PCの音＋自分の声」が両方ケーブルに混ざってZoomへ届きます。</p>
+
+    <div class="warn"><strong>終わったら必ず元に戻すこと：</strong>①Windowsの出力デバイスを普段のスピーカーに戻す ②Zoomのマイクを実際のマイクに戻す ③手順4・5で入れた「このデバイスを聴く」のチェックを外す。戻し忘れると、次の会議で「声が聞こえない」事故になります。</div>
+    <div class="note">複数の音源を個別に音量調整したい・常用したい場合は、上位ツールの <a href="https://voicemeeter.com/" target="_blank" rel="noopener">VoiceMeeter</a>（同じ作者の無料ミキサー）を検討してください。この方法はあくまで「今日を乗り切る」ための応急処置です。</div>
   </div>
 
   <footer>
