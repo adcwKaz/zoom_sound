@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zoom「共有した音が聞こえない」解決チェックリスト（Windows向け）</title>
+<meta name="description" content="Zoomの画面共有でPCの音・動画の音が相手に聞こえないときの原因と対処法を、上から順に試すだけのチェックリストにまとめました。Windows向け。">
+<style>
+  :root {
+    --zoom-blue: #0b5cff;
+    --zoom-blue-light: #e8f0ff;
+    --text: #232333;
+    --text-sub: #6e7191;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --ok: #18a058;
+    --warn: #e8a23d;
+    --border: #e3e6ef;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", Meiryo, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 80px; }
+
+  header {
+    background: linear-gradient(135deg, #0b5cff 0%, #2d8cff 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 32px 24px;
+    margin-bottom: 20px;
+  }
+  header .badge {
+    display: inline-block;
+    background: rgba(255,255,255,.2);
+    border-radius: 999px;
+    padding: 2px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  header h1 { font-size: 24px; line-height: 1.5; margin-bottom: 10px; }
+  header p { font-size: 14px; opacity: .92; }
+
+  .progress {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 10px rgba(20,30,80,.06);
+  }
+  .progress .bar {
+    flex: 1;
+    height: 8px;
+    background: var(--zoom-blue-light);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress .bar i {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: var(--zoom-blue);
+    border-radius: 999px;
+    transition: width .25s;
+  }
+  .progress .count { font-size: 13px; font-weight: 700; color: var(--text-sub); white-space: nowrap; }
+  .progress button {
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--text-sub);
+    cursor: pointer;
+  }
+  .progress button:hover { color: var(--zoom-blue); border-color: var(--zoom-blue); }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 32px 4px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title .num {
+    background: var(--zoom-blue);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 13px;
+    padding: 2px 10px;
+  }
+  .section-lead { font-size: 13px; color: var(--text-sub); margin: 0 4px 14px; }
+
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: opacity .2s;
+  }
+  .step.done { opacity: .55; }
+  .step label.head {
+    display: flex;
+    gap: 14px;
+    padding: 18px;
+    cursor: pointer;
+    align-items: flex-start;
+  }
+  .step input[type="checkbox"] {
+    appearance: none;
+    flex: none;
+    width: 26px;
+    height: 26px;
+    margin-top: 2px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    background: #fff;
+  }
+  .step input[type="checkbox"]:checked {
+    background: var(--ok);
+    border-color: var(--ok);
+  }
+  .step input[type="checkbox"]:checked::after {
+    content: "✓";
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .step .t { font-size: 15.5px; font-weight: 700; }
+  .step.done .t { text-decoration: line-through; }
+  .step .d { font-size: 13.5px; color: var(--text-sub); margin-top: 4px; }
+  .step .body {
+    border-top: 1px dashed var(--border);
+    padding: 16px 18px 18px 58px;
+    font-size: 14px;
+  }
+  .step .body ol { padding-left: 20px; }
+  .step .body li { margin-bottom: 6px; }
+  .step .body .note {
+    background: var(--zoom-blue-light);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  .step .body .warn {
+    background: #fdf3e3;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  kbd, .ui {
+    background: #eef1f8;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1px 7px;
+    font-size: 12.5px;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  .tips {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 14px;
+    font-size: 14px;
+  }
+  .tips h3 { font-size: 15px; margin-bottom: 8px; color: var(--zoom-blue); }
+  .tips ol { padding-left: 20px; }
+  .tips li { margin-bottom: 6px; }
+
+  footer {
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--text-sub);
+    text-align: center;
+  }
+  footer a { color: var(--zoom-blue); }
+
+  @media (max-width: 480px) {
+    header h1 { font-size: 20px; }
+    .step .body { padding-left: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="badge">Windows 向け</span>
+    <h1>Zoomで共有した音が相手に聞こえないときのチェックリスト</h1>
+    <p>動画やBGMを画面共有しても「音が聞こえません」と言われたら、上から順に確認してください。だいたいSTEP 1〜3で直ります。</p>
+  </header>
+
+  <div class="progress">
+    <div class="bar"><i id="bar"></i></div>
+    <span class="count" id="count">0 / 0 確認済み</span>
+    <button id="reset" type="button">リセット</button>
+  </div>
+
+  <div class="section-title"><span class="num">基本</span>まずここを確認（ほとんどはこれで直る）</div>
+
+  <div class="step">
+    <label class="head">
+      <input type="checkbox" data-key="s1">
+      <span>
+        <span class="t">STEP 1：「音声を共有」にチェックが入っているか</span>
+        <span class="d">いちばん多い原因。Zoomは初期設定で音声共有がオフです。</span>
+      </span>
+    </label>
+    <div class="body">
+      <ol>
+        <li>画面共有を開始する緑のボタン <span class="ui">共有</span> を押す</li>
+        <li>共有する画面を選ぶウィンドウの<strong>左下</strong>にある <span class="ui">音声を共有</span> にチェック</li>
+        <li>すでに共有中の場合は、画面上部のメニュー <span class="ui">詳細</span>（…）→ <span class="ui">音声を共有</span> をオン</li>
+      </ol>
+      <div class="note">バージョンによって「サウンドを共有」「コンピューターの音声を共有」という表記の場合もあります。</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <label class="head">
+      <input type="checkbox" data-key="s2">
+      <span>
+        <span class="t">STEP 2：音源そのものがミュートになっていないか</span>
+        <span class="d">動画プレーヤーやYouTube側の音量、Windowsの音量を確認。</span>
+      </span>
+    </label>
+    <div class="body">
+      <ol>
+        <li>再生する動画・YouTube・PowerPoint側の音量がミュート/0になっていないか</li>
+        <li>タスクバー右下のスピーカーアイコンで、Windows全体の音量を確認</li>
+        <li>スピーカーアイコンを右クリック → <span class="ui">音量ミキサーを開く</span> で、アプリごとの音量が0になっていないか</li>
+      </ol>
+      <div class="note">自分のPCで音が鳴っていないものは、相手にも届きません。まず自分に聞こえる状態にしてから共有します。</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <label class="head">
+      <input type="checkbox" data-key="s3">
+      <span>
+        <span class="t">STEP 3：Zoomを最新版にアップデートする</span>
+        <span class="d">古いバージョン（6.x以前）は音声まわりの不具合が残っています。</span>
+      </span>
+    </label>
+    <div class="body">
+      <ol>
+        <li>Zoomを開き、右上の自分のアイコンをクリック</li>
+        <li><span class="ui">アップデートを確認</span> を選び、最新版（Zoom Workplace 7.x）に更新</li>
+        <li>更新後はZoomを再起動してから共有を試す</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="section-title"><span class="num">応用</span>それでもダメなら（Windows特有の原因）</div>
+  <p class="section-lead">基本の3つで直らない場合、Zoomの設定・Windowsのオーディオ機能が原因のことがあります。</p>
+
+  <div class="step">
+    <label class="head">
+      <input type="checkbox" data-key="s4">
+      <span>
+        <span class="t">STEP 4：「複数の参加者が同時に共有可能」をオフにする（ホスト向け）</span>
+        <span class="d">同時共有が有効だと、仕様上サウンド共有が使えなくなります。</span>
+      </span>
+    </label>
+    <div class="body">
+      <ol>
+        <li>ホスト（主催者）が、共有ボタン横の <span class="ui">^</span>（上矢印）をクリック</li>
+        <li><span class="ui">同時に1名の参加者が共有可能</span> を選択</li>
+      </ol>
+      <div class="warn">「音声を共有」のチェックボックスが<strong>グレーアウトして押せない</strong>ときは、ほぼこれが原因です。</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <label class="head">
+      <input type="checkbox" data-key="s5">
+      <span>
+        <span class="t">STEP 5：ノイズ除去・オーディオ拡張機能をオフにする</span>
+        <span class="d">Realtek等のノイズ抑制が、共有音声を「雑音」として消してしまうことがあります。</span>
+      </span>
+    </label>
+    <div class="body">
+      <ol>
+        <li><span class="ui">設定</span> → <span class="ui">システム</span> → <span class="ui">サウンド</span> → 使用中のスピーカーを選択</li>
+        <li><span class="ui">オーディオの強化</span>（オーディオ拡張機能）を <strong>オフ</strong> にする</li>
+        <li>「Realtek Audio Console」が入っているPCは、そちらのノイズ抑制・音響効果もオフにする</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="step">
+    <label class="head">
+      <input type="checkbox" data-key="s6">
+      <span>
+        <span class="t">STEP 6：Zoomのオーディオドライバを修復する（再インストール）</span>
+        <span class="d">サウンド共有はZoom専用ドライバ（ZoomAudioDevice）経由。これが壊れると音が流れません。</span>
+      </span>
+    </label>
+    <div class="body">
+      <ol>
+        <li><span class="ui">デバイスマネージャー</span> → <span class="ui">オーディオの入力および出力</span> に「ZoomAudioDevice」があるか確認</li>
+        <li>無い・⚠マークが付いている場合は、Zoomをアンインストール</li>
+        <li><a href="https://zoom.us/download" target="_blank" rel="noopener">zoom.us/download</a> から最新版を再インストール（管理者権限で実行）</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="step">
+    <label class="head">
+      <input type="checkbox" data-key="s7">
+      <span>
+        <span class="t">STEP 7：Bluetoothイヤホン・ヘッドセットを疑う</span>
+        <span class="d">Bluetooth機器が通話モードに切り替わると、音がおかしくなることがあります。</span>
+      </span>
+    </label>
+    <div class="body">
+      <ol>
+        <li>いったんBluetooth機器を切断し、PC本体のスピーカーで共有を試す</li>
+        <li>それで直る場合は、Zoomの <span class="ui">設定</span> → <span class="ui">オーディオ</span> でスピーカーとマイクの組み合わせを見直す</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="section-title"><span class="num">別解</span>音だけ流したい・もっと良くしたい</div>
+
+  <div class="tips">
+    <h3>🎵 画面はいらない、BGM・音声だけ流したいとき</h3>
+    <ol>
+      <li><span class="ui">共有</span> ボタン → <span class="ui">詳細</span> タブを開く</li>
+      <li><span class="ui">コンピューターオーディオ</span>（コンピューターの音声のみ）を選んで共有</li>
+    </ol>
+    <p>画面を共有せずPCの音だけを流せます。マイクとは別系統なので、しゃべりながらBGMを流す用途にも使えます。仮想オーディオソフト（VB-Cable / VoiceMeeter）を入れなくても、いまはこれで足ります。</p>
+  </div>
+
+  <div class="tips">
+    <h3>🎧 音質を上げたいとき（音楽・動画上映向け）</h3>
+    <ol>
+      <li>Zoomの <span class="ui">設定</span> → <span class="ui">オーディオ</span> → <span class="ui">詳細</span> を開く</li>
+      <li><span class="ui">ミーティング内オプションをマイクから「オリジナルサウンド」に切り替えられるように表示</span> をオン</li>
+      <li><span class="ui">高忠実度音楽モード</span> と <span class="ui">ステレオオーディオ</span> にチェック</li>
+    </ol>
+    <p>※高音質モードは通信量が増えるので、回線が不安定な場合はオフのままを推奨します。</p>
+  </div>
+
+  <footer>
+    <p>参考：<a href="https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0057913" target="_blank" rel="noopener">Zoom公式：画面共有時に音声がミュートされる場合のトラブルシューティング</a> ／ <a href="https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0063608" target="_blank" rel="noopener">Zoom公式：BGM・コンピューターオーディオの共有</a></p>
+    <p>最終更新：2026年6月</p>
+  </footer>
+
+</div>
+
+<script>
+  const boxes = document.querySelectorAll('.step input[type="checkbox"]');
+  const bar = document.getElementById('bar');
+  const count = document.getElementById('count');
+  const KEY = 'zoom-sound-checklist';
+
+  const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+  boxes.forEach(box => {
+    if (saved[box.dataset.key]) box.checked = true;
+    box.addEventListener('change', update);
+  });
+
+  function update() {
+    const state = {};
+    let done = 0;
+    boxes.forEach(box => {
+      state[box.dataset.key] = box.checked;
+      box.closest('.step').classList.toggle('done', box.checked);
+      if (box.checked) done++;
+    });
+    localStorage.setItem(KEY, JSON.stringify(state));
+    bar.style.width = (done / boxes.length * 100) + '%';
+    count.textContent = `${done} / ${boxes.length} 確認済み`;
+  }
+
+  document.getElementById('reset').addEventListener('click', () => {
+    boxes.forEach(box => box.checked = false);
+    update();
+  });
+
+  update();
+</script>
+</body>
+</html>
